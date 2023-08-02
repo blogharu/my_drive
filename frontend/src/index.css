@@ -1,0 +1,46 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden
+}
+
+header {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.text-overflow-dots {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+header {
+  background-color: #f1f3f4;
+}
+
+.dir:hover {
+  text-decoration: underline;
+}
+
+.file.selected {
+  background-color: #e0e1e0;
+}
+
+.files {
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: center;
+  padding-bottom: 5rem;
+}
+
+.selected-buttons {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.controller-button:hover {
+  background-color: #e0e0e0;
+}
