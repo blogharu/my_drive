@@ -28,13 +28,7 @@ SECRET_KEY = get_settings().SECRET_KEY
 DEBUG = get_settings().DEBUG
 
 ALLOWED_HOSTS = ["*"]
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    "http://192.168.0.7:3000",
-    "http://73.11.103.46:3000",
-    "http://73.11.103.46:800",
-]
+CORS_ALLOWED_ORIGINS = []
 
 # Application definition
 
@@ -45,9 +39,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "oauth2_provider",
+    "social_django",
+    "drf_social_oauth2",
     "rest_framework",
     "file",
     "corsheaders",
+    "oauth",
 ]
 
 MIDDLEWARE = [
@@ -74,6 +72,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -135,3 +135,29 @@ if not DRIVE_PATH.exists():
     raise ValueError(f"{DRIVE_PATH} does not exists")
 elif not DRIVE_PATH.is_dir():
     raise ValueError(f"{DRIVE_PATH} is not directory")
+
+# Authentications
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "drf_social_oauth2.authentication.SocialAuthentication",
+    ),
+}
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "oauth.backends.MyAppOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = get_settings().SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = (
+    get_settings().SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+
+DRFSO2_PROPRIETARY_BACKEND_NAME = "my_drive"

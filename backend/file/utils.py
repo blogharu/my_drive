@@ -1,9 +1,10 @@
 from pathlib import Path
 
 
-def get_files(dir_path: Path) -> list[dict]:
+def get_files(dir_path: Path, is_dot_files=False) -> list[dict]:
     files = []
-    for file in dir_path.glob("*"):
+    pattern = "*" if is_dot_files else "[!.]*"
+    for file in dir_path.glob(pattern):
         if file.is_dir():
             file_type = "d"
         elif file.is_file():

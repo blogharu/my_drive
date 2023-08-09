@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     DATABASE: DatabaseModel
     DRIVE_PATH: str
 
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: str
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: str
+
 
 @lru_cache
 def get_settings() -> Settings:
