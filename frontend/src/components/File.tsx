@@ -35,6 +35,8 @@ export default function File({ name = "a", size = 0, type = "-" }: FileProps) {
         className="file m-2"
         style={{ width: "12rem", height: "16rem" }}
         data-name={name}
+        data-type={type}
+        data-size={size}
         onDoubleClick={onDoubleClick}
         onClick={onClick}
     >

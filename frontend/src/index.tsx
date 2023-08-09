@@ -6,7 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import store from './store'
 import { Provider } from 'react-redux'
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { CookiesProvider } from 'react-cookie';
 const rootDom = document.getElementById('root') as HTMLElement
 
 rootDom.classList.add("h-100")
@@ -17,9 +18,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <GoogleOAuthProvider clientId={`${process.env.REACT_APP_SOCIAL_AUTH_GOOGLE_OAUTH2_KEY}`}>
+      <CookiesProvider>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </CookiesProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );
 

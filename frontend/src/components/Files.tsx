@@ -1,19 +1,12 @@
-import { Container, Row, Col } from "react-bootstrap"
+import { Row, Col } from "react-bootstrap"
 import File from "./File"
-import $ from 'jquery';
-import { ArrowClockwise } from 'react-bootstrap-icons';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button } from 'react-bootstrap'
-import { setPath, setFiles, resetSelected, reloadFiles } from "../slices/myDriveSlice";
-import { motion } from "framer-motion"
+import { setFiles, resetSelected, setEmptyFilesMessage } from "../slices/myDriveSlice";
 import { RootState } from "../store";
-import store from "../store";
-import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { tsExpressionWithTypeArguments } from "@babel/types";
-import { refinePath } from "../utils/utils";
-import Toasts from "../utils/toasts";
 import { uploadFilesSystemEntries } from "../utils/utils";
+import axios from "axios";
+import { useState } from "react";
 
 export type FilesProps = {
     path: string
@@ -40,6 +33,7 @@ const onDragLeave = (event: React.DragEvent<HTMLElement>) => {
 export default function Files({ path }: FilesProps) {
     const files = useSelector((state: RootState) => state.myDrive.files)
     const isLoaded = useSelector((state: RootState) => state.myDrive.isLoaded)
+    const emptyFilesMessage = useSelector((state: RootState) => state.myDrive.emptyFilesMessage)
     const dispatch = useDispatch()
 
     const onDrop = (event: React.DragEvent<HTMLElement>) => {
@@ -59,12 +53,14 @@ export default function Files({ path }: FilesProps) {
     }
 
     if (isLoaded === false) {
-        $.ajax({
-            url: process.env.REACT_APP_API_SERVER_URL + "/file" + path,
-            dataType: "json",
-            success: function (data) {
-                dispatch(setFiles(data.files))
-                dispatch(resetSelected())
+        axios.get(
+            "/file" + path,
+        ).then((response) => {
+            dispatch(setFiles(response.data.files))
+        }).catch((error) => {
+            if (error.response.status == 401) {
+                dispatch(setFiles([]))
+                dispatch(setEmptyFilesMessage("Login to use My Drive!"))
             }
         })
     }
@@ -79,7 +75,13 @@ export default function Files({ path }: FilesProps) {
             onDragEnter={onDragEnter}
         >
             <Row className="justify-content-start">
-                {files.length > 0 ? files.map((file) => <Col className="p-0" key={path + file.name} xs="auto"><File {...file} /></Col>) : <></>}
+                {
+                    files.length > 0 ?
+                        files.map((file) => <Col className="p-0" key={path + file.name} xs="auto">
+                            <File {...file} />
+                        </Col>) :
+                        <Col className="h1 my-5">{emptyFilesMessage}</Col>
+                }
             </Row>
         </div>
     </>)

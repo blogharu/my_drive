@@ -1,6 +1,7 @@
 import Toasts from "./toasts"
 import { reloadFiles } from "../slices/myDriveSlice"
 import { Dispatch } from "redux"
+import axios from "axios"
 
 const refinePath = (path: string) => {
     return path.replace(/^\/+|\/+$/, '').replace(/\/{2,}/, "/")
@@ -72,7 +73,6 @@ const uploadFilesSystemEntries = (path: string, entries: Array<FileSystemEntry>,
 
 const uploadFilesMap = (path: string, files: Map<string, File>, dispatch: Dispatch) => {
     let formData = new FormData()
-    let request = new XMLHttpRequest()
     let fileSize = 0
     let toastName = `${files.size} files`
     for (var [fileName, file] of files) {
@@ -83,27 +83,25 @@ const uploadFilesMap = (path: string, files: Map<string, File>, dispatch: Dispat
         }
     }
     let toastId = Toasts.createUploadFile(toastName)
-    request.upload.addEventListener(
-        'progress',
-        function (e: ProgressEvent) {
-            if (e.loaded <= fileSize) {
-                var percent = Math.round(e.loaded / fileSize * 100);
+
+    axios.post('/file/${refinePath(path)}', formData, {
+        onUploadProgress: (event) => {
+            if (event.loaded <= fileSize) {
+                var percent = Math.round(event.loaded / fileSize * 100);
                 Toasts.updateUploadFile(toastId, toastName, percent)
             }
-            if (e.loaded === e.total) {
+            if (event.loaded === event.total) {
                 Toasts.updateUploadFile(toastId, toastName, 100)
             }
-        }
-    )
-    request.onreadystatechange = () => {
-        if (request.readyState === 4) {
-            dispatch(reloadFiles())
-            Toasts.updateUploadFile(toastId, toastName, 200)
-        }
-    }
-    request.open('post', process.env.REACT_APP_API_SERVER_URL + `/file/${refinePath(path)}`);
-    request.timeout = 45000;
-    request.send(formData);
+        },
+        timeout: 45000,
+    }).then(() => {
+        dispatch(reloadFiles())
+        Toasts.updateUploadFile(toastId, toastName, 200)
+    }).catch(() => {
+        // Toasts.updateUploadFile(toastId, toastName, 300)
+        Toasts.dismiss(toastId)
+    })
 }
 
 export { refinePath, uploadFile, uploadFilesMap, uploadFilesSystemEntries }

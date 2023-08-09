@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { FileProps } from '../components/File'
 import { DisplayEnum, SortEnum } from '../components/Controller'
 import { refinePath } from '../utils/utils'
+import $ from 'jquery'
 
 export const myDriveSlice = createSlice({
     name: "myDrive",
@@ -12,6 +13,7 @@ export const myDriveSlice = createSlice({
         selected: 0,
         display: DisplayEnum.icon,
         sort: SortEnum.a_z,
+        emptyFilesMessage: "",
     },
     reducers: {
         setPath: (state, action) => {
@@ -20,6 +22,7 @@ export const myDriveSlice = createSlice({
                 state.path = newPath
                 state.isLoaded = false
                 window.history.pushState(null, "", newPath)
+                $("#new-folder-name").val('')
             }
         },
         addPath: (state, action) => {
@@ -28,11 +31,22 @@ export const myDriveSlice = createSlice({
             state.path = newPath
             state.isLoaded = false
             window.history.pushState(null, "", newPath)
-
+            $("#new-folder-name").val('')
         },
         setFiles: (state, action) => {
+            action.payload.sort((file1, file2) => {
+                if (file1.type === file2.type) {
+                    if (file1.name < file2.name) return -1;
+                    else if (file1.name > file2.name) return 1;
+                    return 0
+                }
+                return file1.type === "d" ? -1 : 1
+            })
             state.files = action.payload
             state.isLoaded = true
+            if (action.payload.length === 0) {
+                state.emptyFilesMessage = "Folder is empty!"
+            }
         },
         increaseSelected: (state) => {
             state.selected = state.selected + 1
@@ -53,13 +67,17 @@ export const myDriveSlice = createSlice({
         setSort: (state, action) => {
             if (state.sort !== action.payload)
                 state.sort = action.payload
+        },
+        setEmptyFilesMessage: (state, action) => {
+            if (state.emptyFilesMessage !== action.payload)
+                state.emptyFilesMessage = action.payload
         }
     }
 })
 
 export const {
     setPath, setFiles, addPath, increaseSelected, decreaseSelected,
-    resetSelected, reloadFiles, setDisplay, setSort } = myDriveSlice.actions
+    resetSelected, reloadFiles, setDisplay, setSort, setEmptyFilesMessage } = myDriveSlice.actions
 export default myDriveSlice.reducer
 
 
