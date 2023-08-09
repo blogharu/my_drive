@@ -27,8 +27,8 @@ SECRET_KEY = get_settings().SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_settings().DEBUG
 
-ALLOWED_HOSTS = ["*"]
-CORS_ALLOWED_ORIGINS = []
+ALLOWED_HOSTS = get_settings().ALLOWED_HOSTS
+CORS_ALLOWED_ORIGINS = get_settings().CORS_ALLOWED_ORIGINS
 
 # Application definition
 

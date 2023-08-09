@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: str
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: str
 
+    ALLOWED_HOSTS: list[str]
+    CORS_ALLOWED_ORIGINS: list[str]
 
 @lru_cache
 def get_settings() -> Settings:
