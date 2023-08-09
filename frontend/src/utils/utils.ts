@@ -84,7 +84,7 @@ const uploadFilesMap = (path: string, files: Map<string, File>, dispatch: Dispat
     }
     let toastId = Toasts.createUploadFile(toastName)
 
-    axios.post('/file/${refinePath(path)}', formData, {
+    axios.post(`/file/${refinePath(path)}`, formData, {
         onUploadProgress: (event) => {
             if (event.loaded <= fileSize) {
                 var percent = Math.round(event.loaded / fileSize * 100);
