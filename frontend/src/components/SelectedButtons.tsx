@@ -81,6 +81,7 @@ const DeleteButton = () => {
                 }).catch((error) => { })
             }
         }
+        del()
     }
     return (
         <div className='selected-button rounded-circle p-3 bg-danger m-3' onClick={onClick}>
